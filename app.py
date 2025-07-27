@@ -205,7 +205,7 @@ HTML = '''
             localStorage.setItem('theme', newTheme);
 
             const btn = document.querySelector('.theme-toggle');
-            btn.textContent = newTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+            btn.textContent = newTheme === 'light' ? '🌙 Donkere Modus' : '☀️ Lichte Modus';
         }
 
         // Load saved theme on page load
@@ -214,7 +214,7 @@ HTML = '''
             document.documentElement.setAttribute('data-theme', savedTheme);
 
             const btn = document.querySelector('.theme-toggle');
-            btn.textContent = savedTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+            btn.textContent = savedTheme === 'light' ? '🌙 Donkere Modus' : '☀️ Lichte Modus';
         });
     </script>
 </head>
@@ -222,35 +222,35 @@ HTML = '''
 <div class="container">
     <div class="header">
         <img src="/logo" alt="Leurs Logo" class="logo">
-        <button class="theme-toggle" onclick="toggleTheme()">☀️ Light Mode</button>
+        <button class="theme-toggle" onclick="toggleTheme()">☀️ Lichte Modus</button>
     </div>
 
     <h2>Materiaal Uitslag Samenvatting</h2>
 
     {% if debug_mode %}
-    <div class="debug-mode-indicator">🔧 DEBUG MODE ENABLED</div>
+    <div class="debug-mode-indicator">🔧 DEBUG MODUS INGESCHAKELD</div>
     {% endif %}
 
     <form method="post">
-        <label for="csv">Paste your tab-separated CSV content here:</label>
-        <textarea name="csv" id="csv" placeholder="Paste your CSV data here...
+        <label for="csv">Plak hier uw tab-gescheiden CSV inhoud:</label>
+        <textarea name="csv" id="csv" placeholder="Plak hier uw CSV gegevens...
 
-With headers:
+Met headers:
 Materiaal	user0	Lengte	Breedte	Aantal	Onderdeel	Element	Kant_X2	Kant_X1	Kant_Y1	Kant_Y2
 
-Without headers (data only):
+Zonder headers (alleen gegevens):
 DECOR_01_18	1	2305.0	690.0	1	Front_Standaard_1.1	HK_Zichtzijde	X	X	X	X">{{ csv|default('') }}</textarea>
         <br><br>
-        <button class="btn" type="submit">🔢 Calculate</button>
+        <button class="btn" type="submit">🔢 Berekenen</button>
     </form>
 
     {% if debug_info %}
-    <h3>🐛 Debug Information</h3>
+    <h3>🐛 Debug Informatie</h3>
     <div class="debug">{{ debug_info }}</div>
     {% endif %}
 
     {% if result %}
-    <h3>📊 Result</h3>
+    <h3>📊 Resultaat</h3>
     <table>
         <tr>
             <th>Materiaal</th>
