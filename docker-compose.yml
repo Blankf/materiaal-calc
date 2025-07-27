@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  materiaal-uitslag-web:
+    image: ghcr.io/blankf/materiaal-calc:latest
+    # container_name: materiaal-uitslag-web  # Optional: uncomment if you want a fixed name
+    ports:
+      - "8080:8080"
+    environment:
+      - DEBUG=false
+    restart: unless-stopped
+    volumes:
+      # Optional: Mount a directory for logs if needed
+      # - ./logs:/app/logs
+    networks:
+      - materiaal-network
+
+  # Example: nginx reverse proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: materiaal-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      # - ./ssl:/etc/nginx/ssl:ro  # For SSL certificates
+    depends_on:
+      - materiaal-uitslag-web
+    networks:
+      - materiaal-network
+    profiles:
+      - with-nginx
+
+networks:
+  materiaal-network:
+    driver: bridge
