@@ -233,7 +233,13 @@ HTML = '''
 
     <form method="post">
         <label for="csv">Paste your tab-separated CSV content here:</label>
-        <textarea name="csv" id="csv" placeholder="Paste your CSV data here...">{{ csv|default('') }}</textarea>
+        <textarea name="csv" id="csv" placeholder="Paste your CSV data here...
+
+With headers:
+Materiaal	user0	Lengte	Breedte	Aantal	Onderdeel	Element	Kant_X2	Kant_X1	Kant_Y1	Kant_Y2
+
+Without headers (data only):
+DECOR_01_18	1	2305.0	690.0	1	Front_Standaard_1.1	HK_Zichtzijde	X	X	X	X">{{ csv|default('') }}</textarea>
         <br><br>
         <button class="btn" type="submit">🔢 Calculate</button>
     </form>
@@ -272,34 +278,58 @@ def materiaal_uitslag_samenvatting(csv_text):
     lines = csv_text.strip().split('\n')
     debug_print(f"Total lines: {len(lines)}")
 
-    if len(lines) < 2:
+    if len(lines) < 1:
         return [], "No data found"
 
-    # Parse header to find column positions
-    header = lines[0].split('\t')
-    header = [col.strip() for col in header]
-    debug_print(f"Header: {header}")
+    # Check if first line contains headers or data
+    first_line = lines[0].split('\t')
+    first_line = [col.strip() for col in first_line]
+    debug_print(f"First line: {first_line}")
 
-    # Find column indices
-    try:
-        materiaal_idx = header.index('Materiaal')
-        lengte_idx = header.index('Lengte')
-        breedte_idx = header.index('Breedte')
-        aantal_idx = header.index('Aantal')
-        kant_x2_idx = header.index('Kant_X2')
-        kant_x1_idx = header.index('Kant_X1')
-        kant_y1_idx = header.index('Kant_Y1')
-        kant_y2_idx = header.index('Kant_Y2')
-        debug_print(f"Column indices: Materiaal={materiaal_idx}, Lengte={lengte_idx}, Breedte={breedte_idx}")
-    except ValueError as e:
-        return [], f'Missing column: {e}'
+    # Detect if headers are present by checking for known header names
+    has_headers = any(col in ['Materiaal', 'Lengte', 'Breedte', 'Aantal', 'Kant_X2', 'Kant_X1', 'Kant_Y1', 'Kant_Y2'] for col in first_line)
+    debug_print(f"Headers detected: {has_headers}")
+
+    data_start_line = 1 if has_headers else 0
+
+    if has_headers:
+        # Parse header to find column positions
+        header = first_line
+        debug_print(f"Header: {header}")
+
+        # Find column indices
+        try:
+            materiaal_idx = header.index('Materiaal')
+            lengte_idx = header.index('Lengte')
+            breedte_idx = header.index('Breedte')
+            aantal_idx = header.index('Aantal')
+            kant_x2_idx = header.index('Kant_X2')
+            kant_x1_idx = header.index('Kant_X1')
+            kant_y1_idx = header.index('Kant_Y1')
+            kant_y2_idx = header.index('Kant_Y2')
+            debug_print(f"Column indices: Materiaal={materiaal_idx}, Lengte={lengte_idx}, Breedte={breedte_idx}")
+        except ValueError as e:
+            return [], f'Missing column: {e}'
+    else:
+        # Use fixed column positions based on expected structure:
+        # Materiaal, user0, Lengte, Breedte, Aantal, Onderdeel, Element, Kant_X2, Kant_X1, Kant_Y1, Kant_Y2
+        materiaal_idx = 0
+        lengte_idx = 2
+        breedte_idx = 3
+        aantal_idx = 4
+        kant_x2_idx = 7
+        kant_x1_idx = 8
+        kant_y1_idx = 9
+        kant_y2_idx = 10
+        debug_print(f"Using fixed column indices: Materiaal={materiaal_idx}, Lengte={lengte_idx}, Breedte={breedte_idx}")
+        debug_print("Expected structure: Materiaal, user0, Lengte, Breedte, Aantal, Onderdeel, Element, Kant_X2, Kant_X1, Kant_Y1, Kant_Y2")
 
     # Process each data row
     uitslagen = []
     processed_count = 0
     skipped_count = 0
 
-    for line_num, line in enumerate(lines[1:], 2):
+    for line_num, line in enumerate(lines[data_start_line:], data_start_line + 1):
         if not line.strip():
             continue
         cols = line.split('\t')

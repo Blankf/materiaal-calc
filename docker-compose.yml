@@ -5,16 +5,14 @@ networks:
     driver: bridge
 
 services:
-  materiaal-uitslag-web-dev:
-    build: .
-    container_name: materiaal-uitslag-web-dev
+  materiaal-uitslag-web:
+    image: ghcr.io/blankf/materiaal-calc:latest
+    container_name: materiaal-uitslag-web
     ports:
       - "8080:8080"
     environment:
       - DEBUG=false
     restart: unless-stopped
-    volumes:
-      - .:/app  # Mount source code for development
     networks:
       - materiaal-network
 
