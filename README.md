@@ -230,7 +230,7 @@ podman build --platform linux/arm64 -t materiaal-uitslag-web:arm64 .
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test with both Docker and Podman
+4. Test
 5. Submit a pull request
 
 ## 📄 **License**
