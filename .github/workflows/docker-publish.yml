@@ -24,18 +24,28 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate tags
+        id: tags
+        run: |
+          DATE_TAG=$(date +%Y.%m.%d)
+          DATETIME_TAG=$(date +%Y%m%d-%H%M%S)
+          echo "date_tag=$DATE_TAG" >> $GITHUB_OUTPUT
+          echo "datetime_tag=$DATETIME_TAG" >> $GITHUB_OUTPUT
       - name: Build Docker image (no push)
         uses: docker/build-push-action@v5
         with:
           context: ./
           file: ./Dockerfile
           push: false
-          tags: ghcr.io/blankf/materiaal-calc:latest
+          tags: |
+            ghcr.io/blankf/materiaal-calc:latest
+            ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.date_tag }}
+            ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.datetime_tag }}
           platforms: linux/amd64,linux/arm64
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.32.0
         with:
-          image-ref: ghcr.io/blankf/materiaal-calc:latest
+          image-ref: ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.datetime_tag }}
           format: table
           exit-code: 1
           ignore-unfixed: true
@@ -46,7 +56,10 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/blankf/materiaal-calc:latest
+          tags: |
+            ghcr.io/blankf/materiaal-calc:latest
+            ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.date_tag }}
+            ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.datetime_tag }}
           platforms: linux/amd64,linux/arm64
       - name: Image digest
         run: |
