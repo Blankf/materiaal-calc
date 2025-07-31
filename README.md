@@ -2,22 +2,30 @@
 
 A lightweight, secure Dockerized web application for processing woodworking CSV exports and calculating material edge lengths and widths.
 
+---
+
+## 🆕 What's New
+
+- **Templates split:** The HTML is now in `templates/index.html` (not in the Python code).
+- **Dutch interface:** All user-facing text is now in Dutch.
+- **Headerless CSV support:** You can paste CSV data with or without headers.
+- **Container security:** The GitHub Actions workflow scans the image with Trivy before pushing to GHCR.
+
+---
+
 ## 🏗️ **Building and Running**
 
 ### Method 1: Docker Compose (Recommended)
 
 #### Production Mode
 ```bash
-# Build and run with docker-compose
+# Pull and run the latest image from GitHub Container Registry
 docker-compose up -d
-
-# Or with Podman
-podman-compose up -d
 ```
 
 #### Development Mode (with debug enabled)
 ```bash
-# Run development configuration
+# Run development configuration (local build, live reload)
 docker-compose -f docker-compose.dev.yml up
 
 # Or build and run with debug
@@ -55,22 +63,22 @@ podman run -d --name materiaal-uitslag-web-dev \
   materiaal-uitslag-web
 ```
 
-## 🌐 **Accessing the Application**
+## 🌐 **Toegang tot de applicatie**
 
-- **Web Interface**: http://localhost:8080
-- **With Nginx**: http://localhost (port 80)
+- **Webinterface**: http://localhost:8080
+- **Met Nginx**: http://localhost (poort 80)
 
-## 🎨 **Features**
+## 🎨 **Functionaliteit**
 
-- **Dark/Light Theme Toggle**: Modern UI with theme persistence
-- **Professional Logo**: Embedded Leurs logo
-- **Debug Mode**: Toggle debug information via environment variable
-- **CSV Processing**: Handles tab-separated CSV with material calculations
-- **Responsive Design**: Works on desktop and mobile devices
+- **Donker/Licht Thema**: Moderne UI met thema-persistentie
+- **Professioneel Logo**: Ingebouwd Leurs-logo
+- **Debug Modus**: Debug-informatie via omgevingsvariabele
+- **CSV-verwerking**: Tab-gescheiden CSV met materiaalkalculaties (met of zonder headers)
+- **Responsief ontwerp**: Werkt op desktop en mobiel
 
-## 📊 **Usage Examples**
+## 📊 **Voorbeeldgebruik**
 
-### Example CSV Input
+### Voorbeeld CSV Input
 ```
 Materiaal	user0	Lengte	Breedte	Aantal	Onderdeel	Element	Kant_X2	Kant_X1	Kant_Y1	Kant_Y2
 DECOR_01_18	1	2305.0	690.0	1	Front_Standaard_1.1	HK_Zichtzijde	X	X	X	X
@@ -78,161 +86,95 @@ U727_18	1	564.0	540.0	1	Bodem	k1 koeler		X
 geen materiaal_18	1	563.0	520.0	2	Legplank	K2 OVEN		X
 ```
 
-### Expected Output
+Of zonder headers:
+```
+DECOR_01_18	1	2305.0	690.0	1	Front_Standaard_1.1	HK_Zichtzijde	X	X	X	X
+U727_18	1	564.0	540.0	1	Bodem	k1 koeler		X
+geen materiaal_18	1	563.0	520.0	2	Legplank	K2 OVEN		X
+```
+
+### Verwachte Output
 | Materiaal | TotaalUitslagLengte_m | TotaalUitslagBreedte_m | TotaalUitslagOpgeteld_m |
 |-----------|----------------------|------------------------|-------------------------|
 | DECOR_01_18 | 43.02 | 42.48 | 85.50 |
 | U727_18 | 54.73 | 0.00 | 54.73 |
 | geen materiaal_18 | 1.23 | 0.00 | 1.23 |
 
-## 🚀 **Container Registry Options**
+## 🚀 **Container Registry & CI**
 
-### 1. Docker Hub
-```bash
-# Tag your image
-podman tag materiaal-uitslag-web yourusername/materiaal-uitslag-web:latest
+- **Image wordt automatisch gebouwd en gescand met Trivy via GitHub Actions.**
+- **Image wordt gepusht naar:** `ghcr.io/blankf/materiaal-calc:latest`
+- **Pullen vanaf een andere host:**
+  ```bash
+  docker pull ghcr.io/blankf/materiaal-calc:latest
+  ```
+- Zie `.github/workflows/docker-publish.yml` voor details.
 
-# Login and push
-podman login docker.io
-podman push yourusername/materiaal-uitslag-web:latest
+## 🔧 **Configuratie**
 
-# Others can pull with:
-podman pull yourusername/materiaal-uitslag-web:latest
-```
+### Omgevingsvariabelen
+- `DEBUG`: Zet op `true` om debugmodus te activeren (standaard: `false`)
 
-### 2. Quay.io (Red Hat's registry)
-```bash
-# Tag for Quay.io
-podman tag materiaal-uitslag-web quay.io/yourusername/materiaal-uitslag-web:latest
-
-# Login and push
-podman login quay.io
-podman push quay.io/yourusername/materiaal-uitslag-web:latest
-
-# Pull command for others:
-podman pull quay.io/yourusername/materiaal-uitslag-web:latest
-```
-
-### 3. GitHub Container Registry (ghcr.io)
-```bash
-# Tag for GitHub Container Registry
-podman tag materiaal-uitslag-web ghcr.io/yourusername/materiaal-uitslag-web:latest
-
-# Login with GitHub Personal Access Token
-echo $GITHUB_TOKEN | podman login ghcr.io -u yourusername --password-stdin
-
-# Push
-podman push ghcr.io/yourusername/materiaal-uitslag-web:latest
-
-# Pull command for others:
-podman pull ghcr.io/yourusername/materiaal-uitslag-web:latest
-```
-
-### 4. Azure Container Registry (ACR)
-```bash
-# Tag for ACR
-podman tag materiaal-uitslag-web yourregistry.azurecr.io/materiaal-uitslag-web:latest
-
-# Login to ACR
-az acr login --name yourregistry
-# Or with podman directly
-podman login yourregistry.azurecr.io
-
-# Push
-podman push yourregistry.azurecr.io/materiaal-uitslag-web:latest
-```
-
-### 5. Google Container Registry (GCR)
-```bash
-# Tag for GCR
-podman tag materiaal-uitslag-web gcr.io/your-project-id/materiaal-uitslag-web:latest
-
-# Configure authentication
-gcloud auth configure-docker
-
-# Push
-podman push gcr.io/your-project-id/materiaal-uitslag-web:latest
-```
-
-### 6. Private Registry
-```bash
-# For a private registry
-podman tag materiaal-uitslag-web your-registry.com/materiaal-uitslag-web:latest
-podman login your-registry.com
-podman push your-registry.com/materiaal-uitslag-web:latest
-```
-
-## 🔧 **Configuration**
-
-### Environment Variables
-- `DEBUG`: Set to `true` to enable debug mode (default: `false`)
-
-### Docker Compose Profiles
-- **Default**: Basic web application
-- **with-nginx**: Includes nginx reverse proxy
-- **dev**: Development mode with debug enabled
+### Docker Compose Profielen
+- **Default**: Basis webapplicatie
+- **with-nginx**: Inclusief nginx reverse proxy
+- **dev**: Ontwikkelmodus met debug
 
 ### Volume Mounts
-- `/app/logs`: Optional log directory
-- `/app`: Development source code mount
+- `/app/logs`: Optionele logmap
+- `/app`: Source code mount voor ontwikkeling
 
-## 📁 **File Structure**
+## 📁 **Bestandsstructuur**
 ```
 materiaal-uitslag-web/
-├── app.py                    # Main Flask application
-├── leurs_logo.jpg           # Company logo
-├── requirements.txt         # Python dependencies
-├── Dockerfile              # Container build instructions
-├── docker-compose.yml      # Production compose file
-├── docker-compose.dev.yml  # Development compose file
-├── nginx.conf              # Nginx configuration
-└── README.md               # This file
+├── app.py                    # Flask applicatie (logica)
+├── templates/index.html      # HTML template
+├── leurs_logo.jpg            # Bedrijfslogo
+├── requirements.txt          # Python dependencies
+├── Dockerfile                # Container build instructies
+├── docker-compose.yml        # Compose file (productie)
+├── docker-compose.dev.yml    # Compose file (ontwikkeling)
+├── nginx.conf                # Nginx configuratie
+└── README.md                 # Deze file
 ```
 
-## 🔒 **Security Notes**
+## 🔒 **Security**
 
-- The application runs as a non-root user inside the container
-- No external dependencies beyond Flask
-- Input validation for CSV processing
-- Minimal attack surface with lightweight Alpine Linux base
+- Container wordt gescand met Trivy (CI)
+- Applicatie draait als non-root user
+- Inputvalidatie voor CSV
+- Minimale attack surface (slim Python base image)
 
 ## 🛠️ **Development**
 
-### Local Development
+### Lokale ontwikkeling
 ```bash
-# Install dependencies
 pip install -r requirements.txt
-
-# Run with debug
 DEBUG=true python app.py
-
-# Access at http://localhost:8080
+# Open http://localhost:8080
 ```
 
-### Building for Different Architectures
+### Multi-arch build
 ```bash
-# Build for multiple architectures
 podman buildx build --platform linux/amd64,linux/arm64 -t materiaal-uitslag-web .
-
-# Or build specifically for ARM64 (Apple Silicon, Raspberry Pi)
-podman build --platform linux/arm64 -t materiaal-uitslag-web:arm64 .
 ```
 
 ## 📝 **Changelog**
 
-- **v1.0**: Initial release with basic CSV processing
-- **v1.1**: Added debug mode and enhanced error handling
-- **v1.2**: Dark theme with light mode toggle and logo integration
-- **v1.3**: Docker Compose support and comprehensive documentation
+- **v1.0**: Eerste release met basis CSV-verwerking
+- **v1.1**: Debugmodus en betere foutafhandeling
+- **v1.2**: Donker thema, licht/donker toggle, logo
+- **v1.3**: Docker Compose en uitgebreide documentatie
+- **v1.4**: HTML in template, Nederlandse interface, headerloze CSV, Trivy scan in CI
 
-## 🤝 **Contributing**
+## 🤝 **Bijdragen**
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
+1. Fork de repository
+2. Maak een feature branch
+3. Doe je aanpassingen
 4. Test
-5. Submit a pull request
+5. Maak een pull request
 
-## 📄 **License**
+## 📄 **Licentie**
 
-This project is for internal use at Leurs.
+Dit project is voor intern gebruik bij Leurs.
