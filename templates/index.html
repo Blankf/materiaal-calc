@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Materiaal Uitslag Samenvatting</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #ffffff;
+            --input-bg: #3d3d3d;
+            --input-border: #555;
+            --table-bg: #2d2d2d;
+            --table-header-bg: #404040;
+            --table-border: #555;
+            --btn-bg: #0078d7;
+            --btn-hover: #005fa3;
+            --debug-bg: #3d3d3d;
+            --debug-border: #666;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f7f7f7;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --input-bg: #ffffff;
+            --input-border: #ccc;
+            --table-bg: #ffffff;
+            --table-header-bg: #eee;
+            --table-border: #ccc;
+            --btn-bg: #0078d7;
+            --btn-hover: #005fa3;
+            --debug-bg: #f0f0f0;
+            --debug-border: #ccc;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2em;
+        }
+
+        .logo {
+            height: 60px;
+            width: auto;
+        }
+
+        .theme-toggle {
+            background: var(--btn-bg);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--btn-hover);
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            padding: 8px;
+            font-family: monospace;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--btn-bg);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 2em;
+            background: var(--table-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            border: 1px solid var(--table-border);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--table-header-bg);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255,255,255,0.05);
+        }
+
+        [data-theme="light"] tr:nth-child(even) {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: var(--container-bg);
+            padding: 2em;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .btn {
+            background: var(--btn-bg);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--btn-hover);
+            transform: translateY(-1px);
+        }
+
+        .debug {
+            background: var(--debug-bg);
+            padding: 1em;
+            margin: 1em 0;
+            border-left: 4px solid var(--debug-border);
+            font-family: monospace;
+            white-space: pre-wrap;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .debug-mode-indicator {
+            color: #ff9800;
+            font-weight: bold;
+            margin-bottom: 1em;
+            padding: 8px;
+            background: rgba(255, 152, 0, 0.1);
+            border-radius: 4px;
+            border-left: 4px solid #ff9800;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--text-color);
+        }
+
+        h3 {
+            color: var(--text-color);
+            border-bottom: 2px solid var(--btn-bg);
+            padding-bottom: 8px;
+        }
+    </style>
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            const btn = document.querySelector('.theme-toggle');
+            btn.textContent = newTheme === 'light' ? '🌙 Donkere Modus' : '☀️ Lichte Modus';
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            const btn = document.querySelector('.theme-toggle');
+            btn.textContent = savedTheme === 'light' ? '🌙 Donkere Modus' : '☀️ Lichte Modus';
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="/logo" alt="Leurs Logo" class="logo">
+        <button class="theme-toggle" onclick="toggleTheme()">☀️ Lichte Modus</button>
+    </div>
+
+    <h2>Materiaal Uitslag Samenvatting</h2>
+
+    {% if debug_mode %}
+    <div class="debug-mode-indicator">🔧 DEBUG MODUS INGESCHAKELD</div>
+    {% endif %}
+
+    <form method="post">
+        <label for="csv">Plak hier uw tab-gescheiden CSV inhoud:</label>
+        <textarea name="csv" id="csv" placeholder="Plak hier uw CSV gegevens...
+
+Met headers:
+Materiaal	user0	Lengte	Breedte	Aantal	Onderdeel	Element	Kant_X2	Kant_X1	Kant_Y1	Kant_Y2
+
+Zonder headers (alleen gegevens):
+DECOR_01_18	1	2305.0	690.0	1	Front_Standaard_1.1	HK_Zichtzijde	X	X	X	X">{{ csv|default('') }}</textarea>
+        <br><br>
+        <button class="btn" type="submit">🔢 Berekenen</button>
+    </form>
+
+    {% if debug_info %}
+    <h3>🐛 Debug Informatie</h3>
+    <div class="debug">{{ debug_info }}</div>
+    {% endif %}
+
+    {% if result %}
+    <h3>📊 Resultaat</h3>
+    <table>
+        <tr>
+            <th>Materiaal</th>
+            <th>TotaalUitslagLengte_m</th>
+            <th>TotaalUitslagBreedte_m</th>
+            <th>TotaalUitslagOpgeteld_m</th>
+        </tr>
+        {% for row in result %}
+        <tr>
+            <td>{{ row['Materiaal'] }}</td>
+            <td>{{ row['TotaalUitslagLengte_m'] }}</td>
+            <td>{{ row['TotaalUitslagBreedte_m'] }}</td>
+            <td>{{ row['TotaalUitslagOpgeteld_m'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+</div>
+</body>
+</html>
