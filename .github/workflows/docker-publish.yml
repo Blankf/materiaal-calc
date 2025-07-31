@@ -28,10 +28,9 @@ jobs:
         id: tags
         run: |
           DATE_TAG=$(date +%Y.%m.%d)
-          DATETIME_TAG=$(date +%Y%m%d-%H%M%S)
           echo "date_tag=$DATE_TAG" >> $GITHUB_OUTPUT
-          echo "datetime_tag=$DATETIME_TAG" >> $GITHUB_OUTPUT
       - name: Build Docker image (no push)
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: ./
@@ -40,12 +39,11 @@ jobs:
           tags: |
             ghcr.io/blankf/materiaal-calc:latest
             ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.date_tag }}
-            ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.datetime_tag }}
           platforms: linux/amd64,linux/arm64
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.32.0
         with:
-          image-ref: ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.datetime_tag }}
+          image-ref: ${{ steps.build.outputs.imageid }}
           format: table
           exit-code: 1
           ignore-unfixed: true
@@ -59,7 +57,6 @@ jobs:
           tags: |
             ghcr.io/blankf/materiaal-calc:latest
             ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.date_tag }}
-            ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.datetime_tag }}
           platforms: linux/amd64,linux/arm64
       - name: Image digest
         run: |
