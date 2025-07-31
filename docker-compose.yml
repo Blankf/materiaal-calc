@@ -16,3 +16,13 @@ services:
     networks:
       - materiaal-network
 
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    environment:
+      TZ: 'Europe/Amsterdam'
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_SCHEDULE: "0 0 10 * * *"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
