@@ -29,26 +29,25 @@ jobs:
         run: |
           DATE_TAG=$(date +%Y.%m.%d)
           echo "date_tag=$DATE_TAG" >> $GITHUB_OUTPUT
-      - name: Build Docker image (no push)
-        id: build
+      # First build single platform for scanning
+      - name: Build Docker image for scanning
         uses: docker/build-push-action@v5
         with:
           context: ./
           file: ./Dockerfile
           push: false
-          tags: |
-            ghcr.io/blankf/materiaal-calc:latest
-            ghcr.io/blankf/materiaal-calc:${{ steps.tags.outputs.date_tag }}
-          platforms: linux/amd64,linux/arm64
+          load: true
+          tags: ghcr.io/blankf/materiaal-calc:scan
+          platforms: linux/amd64
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.32.0
         with:
-          image-ref: ${{ steps.build.outputs.imageid }}
+          image-ref: ghcr.io/blankf/materiaal-calc:scan
           format: table
           exit-code: 1
           ignore-unfixed: true
-      - name: Push Docker image (only if scan passes)
-        if: success()
+      # Only push if scan passes
+      - name: Build and push multi-platform image
         uses: docker/build-push-action@v5
         with:
           context: ./
